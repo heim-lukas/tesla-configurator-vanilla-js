@@ -3,6 +3,15 @@ const exteriorColorSection = document.querySelector("#exterior-buttons");
 const interiorColorSection = document.querySelector("#interior-buttons");
 const exteriorImage = document.querySelector("#exterior-image");
 const interiorImage = document.querySelector("#interior-image");
+const wheelButtonsSection = document.querySelector("#wheel-buttons");
+const performanceBtn = document.querySelector("#performance-btn");
+
+let selectedColor = "Stealth Grey";
+const selectedOptions = {
+  PerformanceWheels: false,
+  PerformancePackage: false,
+  "Full Self-Driving": false,
+};
 
 // Handle Top Bar on scroll
 const handleScroll = () => {
@@ -43,8 +52,8 @@ const handleColorButtonClick = (event) => {
 
     // Change exterior image
     if (event.currentTarget === exteriorColorSection) {
-      const color = button.querySelector("img").alt;
-      exteriorImage.src = exteriorImages[color];
+      selectedColor = button.querySelector("img").alt;
+      updateExteriorImage();
     }
 
     // Change interior image
@@ -55,7 +64,47 @@ const handleColorButtonClick = (event) => {
   }
 };
 
+// Update Exterior Image based on color and wheels
+const updateExteriorImage = () => {
+  const performanceSuffix = selectedOptions["PerformanceWheels"]
+    ? "-performance"
+    : "";
+
+  const colorKey =
+    selectedColor in exteriorImages ? selectedColor : "Stealth Grey";
+
+  exteriorImage.src = exteriorImages[colorKey].replace(
+    ".jpg",
+    `${performanceSuffix}.jpg`
+  );
+};
+
+// Handle Wheel Selection
+const handleWheelButtonClick = (event) => {
+  if (event.target.tagName === "BUTTON") {
+    const buttons = document.querySelectorAll("#wheel-buttons button");
+
+    buttons.forEach((btn) => btn.classList.remove("bg-gray-700", "text-white"));
+
+    // Add selected styles to clicked button
+    event.target.classList.add("bg-gray-700", "text-white");
+
+    selectedOptions["PerformanceWheels"] =
+      event.target.textContent.includes("Performance");
+
+    updateExteriorImage();
+  }
+};
+
+// Performance Package Selection
+const handlePerformanceBtnClick = () => {
+  performanceBtn.classList.toggle("bg-gray-700");
+  performanceBtn.classList.toggle("text-white");
+};
+
 // Event Listeners
 window.addEventListener("scroll", () => requestAnimationFrame(handleScroll));
 exteriorColorSection.addEventListener("click", handleColorButtonClick);
 interiorColorSection.addEventListener("click", handleColorButtonClick);
+wheelButtonsSection.addEventListener("click", handleWheelButtonClick);
+performanceBtn.addEventListener("click", handlePerformanceBtnClick);
