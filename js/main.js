@@ -12,6 +12,8 @@ const fullSelfDrivingCheckbox = document.querySelector(
 const accessoriesCheckboxes = document.querySelectorAll(
   ".accessory-form-checkbox"
 );
+const downPaymentElement = document.querySelector("#down-payment");
+const monthlyPaymentElement = document.querySelector("#monthly-payment");
 
 const basePrice = 52490;
 let currentPrice = basePrice;
@@ -70,6 +72,35 @@ const updateTotalPrice = () => {
 
   // Update the total price in the UI
   totalPriceElement.textContent = `$${currentPrice.toLocaleString()}`;
+
+  // Update payment breakdown
+  updatePaymentBreakdown();
+};
+
+// Update payment breakdown based on current price
+const updatePaymentBreakdown = () => {
+  // Calculate down payment
+  const downPayment = currentPrice * 0.1;
+  downPaymentElement.textContent = `$${downPayment.toLocaleString()}`;
+
+  // Calculate loan details (assuming 60 months loan term and 3% interest rate)
+  const loanTermMonths = 60;
+  const interestRate = 0.03;
+
+  const loanAmount = currentPrice - downPayment;
+
+  // Calculate monthly payment
+  const monthlyInterestRate = interestRate / 12;
+
+  const monthlyPayment =
+    (loanAmount *
+      (monthlyInterestRate *
+        Math.pow(1 + monthlyInterestRate, loanTermMonths))) /
+    (Math.pow(1 + monthlyInterestRate, loanTermMonths) - 1);
+
+  monthlyPaymentElement.textContent = `$${monthlyPayment
+    .toFixed(2)
+    .toLocaleString()}`;
 };
 
 // Handle Top Bar on scroll
@@ -182,6 +213,9 @@ const handleAccessorySelection = (event) => {
   selectedOptions.Accessories[accessoryLabel] = event.target.checked;
   updateTotalPrice();
 };
+
+// Initial update total price
+updateTotalPrice();
 
 // Event Listeners
 window.addEventListener("scroll", () => requestAnimationFrame(handleScroll));
